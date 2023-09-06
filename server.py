@@ -70,7 +70,6 @@ def get_employee():
     else:
         dname = request.args.get('DNAME')
         if dname is not None:
-            # employees = Employee.query.filter_by(dno=dname).all()
             employees = db.session.execute(f"SELECT * FROM employee WHERE dno = (SELECT dno FROM department WHERE dname = :dname)", {"dname": dname})
             return jsonify([dict(row) for row in employees])
         else:
