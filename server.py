@@ -34,7 +34,7 @@ db.create_all()
 @app.route('/addEmployee', methods=['POST'])
 def add_todo():
     data = request.json
-    employee = Employee(ename=data['ename'], dno=data['dname'], salary=data['salary'])
+    employee = Employee(ename=data['ename'], dno=data['dno'], salary=data['salary'])
     db.session.add(employee)
     db.session.commit()
     return {'eno': employee.eno}
@@ -70,8 +70,9 @@ def get_employee():
     else:
         dname = request.args.get('DNAME')
         if dname is not None:
-            employees = Employee.query.filter_by(dno=dname).all()
-            return jsonify([employee.to_dict() for employee in employees])
+            # employees = Employee.query.filter_by(dno=dname).all()
+            employees = db.session.execute(f"SELECT * FROM employee WHERE dno = (SELECT dno FROM department WHERE dname = :dname)", {"dname": dname})
+            return jsonify([dict(row) for row in employees])
         else:
             return jsonify({'message': 'Please specify ENO or DNAME'})
 
